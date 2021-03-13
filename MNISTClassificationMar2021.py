@@ -86,7 +86,7 @@ def HiddenLayerBackpropagation(CurrentLayer, FollowingLayer, FollowingLayerError
   if(Activation == "Sigmoid"):
     FollowingLayerGradient = np.multiply(DerivativeOfSigmoid(FollowingLayer), FollowingLayerError) * LearningRate
   if(Activation == "StableSoftMax"):
-    FollowingLayerGradient = np.multiply(DerivativeOfStableSoftMax(FollowingLayer), FollowingLayerError) # * LearningRate
+    FollowingLayerGradient = np.multiply(DerivativeOfStableSoftMax(FollowingLayer), FollowingLayerError) * LearningRate
       
   # Calculate Current Layer Error
   CurrentLayerError = np.zeros(CurrentLayer.size)
