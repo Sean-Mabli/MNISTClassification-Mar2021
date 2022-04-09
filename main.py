@@ -1,25 +1,33 @@
 import numpy as np
 from emnist import extract_training_samples, extract_test_samples
 import aiinpy as ai
+import random
 
-# Create Dataset
-InTrainData, OutTrainData = extract_training_samples('digits')
-InTestData, OutTestData = extract_test_samples('digits')
-InTrainData, InTestData = (InTrainData[0 : 5000] / 255) - 0.5, (InTestData[0 : 1000] / 255) - 0.5
-
-OutTrainDataReal = np.zeros((5000, 10))
+intrain, outtrain = extract_training_samples('digits')
+intrainreal = np.zeros((5000, 54, 40))
 for i in range(5000):
-  OutTrainDataReal[i, OutTrainData[i]] = 1
-OutTestDataReal = np.zeros((1000, 10))
-for i in range(1000):
-  OutTestDataReal[i, OutTestData[i]] = 1
+  randomone = random.randint(0, 26)
+  randomtwo = random.randint(0, 12)
+  intrainreal[i, randomone : randomone + 28, randomtwo : randomtwo + 28] = (intrain[i] / 255) - 0.5
+outtrainreal = np.zeros((5000, 10))
+for i in range(5000):
+  outtrainreal[i, outtrain[i]] = 1
 
-# CNN Model
-model = ai.model((28, 28), 10, [
-  ai.conv((28, 28), (4, 3, 3), 0.01, 'ReLU', True),
-  ai.pool((2, 2), (2, 2), 'Max'),
-  ai.nn((4, 14, 14), 10, 'StableSoftmax', 0.1, (0, 0))
+intest, outtest = extract_test_samples('digits')
+intestreal = np.zeros((1000, 54, 40))
+for i in range(1000):
+  randomone = random.randint(0, 26)
+  randomtwo = random.randint(0, 12)
+  intestreal[i, randomone : randomone + 28, randomtwo : randomtwo + 28] = (intest[i] / 255) - 0.5
+outtestreal = np.zeros((1000, 10))
+for i in range(1000):
+  outtestreal[i, outtest[i]] = 1
+
+model = ai.model((54, 40), 10, [
+  ai.conv(inshape=(54, 40), filtershape=(4, 3, 3), learningrate=0.01, activation=ai.relu()),
+  ai.pool(stride=(2, 2), filtershape=(2, 2), opperation='Max'),
+  ai.nn(outshape=10, activation=ai.stablesoftmax(), learningrate=0.1, weightsinit=(0, 0))
 ])
 
-model.train(InTrainData, OutTrainDataReal)
-print(model.test(InTestData, OutTestDataReal))
+model.train((intrain, outtrainreal), 5000)
+print(model.test((intest, outtestreal)))
