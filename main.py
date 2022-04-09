@@ -3,16 +3,17 @@ from emnist import extract_training_samples, extract_test_samples
 import aiinpy as ai
 import random
 import wandb
+import pickle
 
 wandb.init(project="cnn-nonsquare")
 config = wandb.config
-config.filters = 11
+config.filters = 13
 config.filtersize = 7
-config.convlr = 0.01966737225503975
-config.nnlr = 0.14892522221247584
-config.gen = 13442
-config.trainsize = 17336
-config.testsize = 1257
+config.convlr = 0.007553907690039779
+config.nnlr = 0.33755062899073013
+config.gen = 17867
+config.trainsize = 15991
+config.testsize = 4650
 
 intrain, outtrain = extract_training_samples('digits')
 intrainreal = np.zeros((config.trainsize, 54, 40))
@@ -42,3 +43,8 @@ model = ai.model((54, 40), 10, [
 
 model.train((intrainreal, outtrainreal), config.gen)
 wandb.log({"accuracy": model.test((intestreal, outtestreal))})
+
+pickle.dump(model.model[0].filter, open("convfilter.p", "w"))
+pickle.dump(model.model[2].bias, open("convbias.p", "w"))
+pickle.dump(model.model[2].weights, open("nnweights.p", "w"))
+pickle.dump(model.model[2].biases, open("nnbiases.p", "w"))

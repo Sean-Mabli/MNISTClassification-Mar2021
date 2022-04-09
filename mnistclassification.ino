@@ -1,3 +1,5 @@
+#include <BasicLinearAlgebra.h>
+#include <TouchScreen.h>
 #include <MCUFRIEND_kbv.h>
 MCUFRIEND_kbv tft;
 
@@ -6,7 +8,6 @@ MCUFRIEND_kbv tft;
 #define YM 8
 #define XP 9
 
-#include <TouchScreen.h>
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
 #define BLACK 0x0000
